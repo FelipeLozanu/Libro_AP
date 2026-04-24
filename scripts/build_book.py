@@ -196,6 +196,42 @@ def fix_html_asset_paths(html_file):
         print(f"   ℹ️ No path fixes needed in {os.path.basename(html_file)}")
 
 
+def fix_searchindex_paths(searchindex_file, lang):
+    """Fix docnames in searchindex.js to remove the language prefix.
+
+    Sphinx builds the standalone project with content inside a lang/ subfolder.
+    So docnames look like 'es/01_tutorial/page'. When search results render
+    on /es/search.html, Sphinx constructs the URL as 'es/01_tutorial/page.html'
+    which resolves to /es/es/01_tutorial/page.html (DOUBLE es/ → 404).
+
+    Fix: replace all occurrences of 'es/' or 'en/' prefix in docnames with ''.
+    """
+    import re as _re
+
+    with open(searchindex_file, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    original = content
+
+    # Pattern: in the JSON, docnames are quoted strings like "es/01_tutorial/page"
+    # We need to strip the "es/" or "en/" prefix from all of them
+    # The prefix appears in docnames, filenames, and possibly objects/terms references
+    prefix = f"{lang}/"
+
+    # Replace "es/ or 'es/ at the start of a JSON string value
+    # Be careful: only replace when it's a path prefix, not mid-string
+    content = _re.sub(f'"{_re.escape(prefix)}', '"', content)
+
+    if content != original:
+        with open(searchindex_file, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"   🔧 Fixed searchindex.js: stripped '{prefix}' prefix from all paths")
+    else:
+        print(
+            f"   ℹ️ searchindex.js: no '{prefix}' prefix found (may already be correct)"
+        )
+
+
 def build_language(lang):
     """Builds the book for a specific language using a standalone temporary directory."""
     print(f"\n🔨 Construyendo versión STANDALONE: {lang.upper()}...")
@@ -328,6 +364,11 @@ def build_language(lang):
                 # a sibling. Now they're inside /es/ so _static/ is at ../_static/
                 if search_file.endswith(".html"):
                     fix_html_asset_paths(dst)
+
+                # CRITICAL: Fix searchindex.js docnames (strip "es/" prefix)
+                # Without this, search results link to /es/es/page.html (double prefix → 404)
+                if search_file == "searchindex.js":
+                    fix_searchindex_paths(dst, lang)
 
         # CRITICAL FIX: Merge the generated _static folder (containing theme assets)
         # from the temp build to the final root _static folder.
@@ -503,11 +544,15 @@ def main():
         create_redirect_index(default_lang)
 
         # Create root search.html that redirects to default language search
+        # CRITICAL: preserve query string (?q=...) so search terms survive the redirect
         search_redirect = f"""<!DOCTYPE html>
 <html>
 <head>
+    <script>
+      var query = window.location.search;
+      window.location.href = "{default_lang}/search.html" + query;
+    </script>
     <meta http-equiv="refresh" content="0; url={default_lang}/search.html" />
-    <script>window.location.href = "{default_lang}/search.html";</script>
 </head>
 <body>
     <p>Redirecting to <a href="{default_lang}/search.html">search</a>...</p>
