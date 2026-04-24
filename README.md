@@ -8,13 +8,13 @@ Plantilla para crear libros docentes interactivos en la **Facultad de Ciencias d
 
 Puedes usar esta plantilla con cualquiera de estos agentes de código:
 
-| Herramienta | Requisito | Dónde se usa |
+| Herramienta | Requisito | Tipo |
 |---|---|---|
 | **VS Code + GitHub Copilot** | [VS Code](https://code.visualstudio.com/) + extensión GitHub Copilot (requiere suscripción **Copilot Pro**) | Editor de código |
-| **Antigravity** | [Descargar de Axiacore](https://antigravity.axiacore.com) (gratuito) | Aplicación de escritorio |
-| **OpenAI Codex** | Suscripción **ChatGPT Plus** o superior | Web de OpenAI |
+| **Google Project IDX (Antigravity)** | Cuenta Google | IDE en la nube de Google |
+| **OpenAI Codex** | Suscripción **ChatGPT Plus** o superior | App de escritorio de OpenAI |
 
-> **¿Cuál elegir?** Si ya usas VS Code, ve con Copilot. Si prefieres algo más sencillo, Antigravity. Si usas ChatGPT Plus, Codex funciona directamente desde el navegador.
+> **¿Cuál elegir?** Si ya usas VS Code, ve con Copilot. Si prefieres trabajar en la nube sin instalar nada, Antigravity de Google. Si usas ChatGPT Plus, la app de escritorio Codex de OpenAI.
 
 ---
 
