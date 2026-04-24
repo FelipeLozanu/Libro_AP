@@ -7,6 +7,11 @@ numpy
 pandas
 seaborn
 sympy
+scipy
+scikit-learn
+schemdraw
+networkx
+ipywidgets
 livereload
 sphinx-autobuild
 watchdog
