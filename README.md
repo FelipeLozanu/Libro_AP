@@ -1,83 +1,183 @@
 # TeachBook Sciences Template 🎓
 
-Plantilla para la creación de libros docentes interactivos en la **Facultad de Ciencias de la USAL**.
+Plantilla para crear libros docentes interactivos en la **Facultad de Ciencias de la USAL**, diseñada para que profesores sin conocimientos de informática puedan crear y publicar libros digitales usando **agentes de código con IA**.
 
-## 🛠️ Prerrequisitos
+---
 
-Para trabajar con este template necesitas instalar:
-1.  **Python 3.8 o superior**: [Descargar aquí](https://www.python.org/downloads/).
-    - *Nota*: Asegúrate de marcar "Add Python to PATH" durante la instalación.
-2.  **Visual Studio Code**: [Descargar aquí](https://code.visualstudio.com/).
-    - Se recomienda instalar las extensiones:
-        - **Python** (de Microsoft).
-        - **GitHub Copilot** (opcional, para usar el asistente de IA).
-3.  **Git**: [Descargar aquí](https://git-scm.com/) (necesario solo si vas a publicar en GitHub).
+## 🤖 Herramientas compatibles
 
-## 🚀 Inicio rápido
+Puedes usar esta plantilla con cualquiera de estos agentes de código:
 
-Hemos incluido un script que prepara todo automáticamente:
+| Herramienta | Requisito | Dónde se usa |
+|---|---|---|
+| **VS Code + GitHub Copilot** | [VS Code](https://code.visualstudio.com/) + extensión GitHub Copilot (requiere suscripción **Copilot Pro**) | Editor de código |
+| **Antigravity** | [Descargar de Axiacore](https://antigravity.axiacore.com) (gratuito) | Aplicación de escritorio |
+| **OpenAI Codex** | Suscripción **ChatGPT Plus** o superior | Web de OpenAI |
 
-1.  **Abrir en VS Code**: Abre la carpeta del proyecto.
-2.  **Preparar entorno**:
-    ```bash
-    python scripts/setup_env.py
-    ```
-    Esto creará un entorno virtual (`.venv`) e instalará todas las librerías necesarias.
-3.  **Activar entorno**:
-    - En Windows: `.\.venv\Scripts\activate`
-    - En Mac/Linux: `source .venv/bin/activate`
-    *(VS Code suele detectarlo automáticamente y preguntarte si quieres usarlo).*
+> **¿Cuál elegir?** Si ya usas VS Code, ve con Copilot. Si prefieres algo más sencillo, Antigravity. Si usas ChatGPT Plus, Codex funciona directamente desde el navegador.
 
-4.  **Explorar**: Abre la carpeta `book/es/` para ver el contenido.
-5.  **Editar**: Modifica los archivos `.md` o `.ipynb`.
-6.  **Previsualizar**:
-    ```bash
-    python scripts/preview_book.py
-    ```
-    Esto abrirá un navegador con la web y recargará automáticamente al guardar cambios.
+---
 
-## 📂 Estructura
+## 📋 Requisitos previos
 
-- `book/es/`: Contiene todo el texto y código del libro.
-- `book/_toc.yml`: Define el índice (tabla de contenidos).
-- `book/_config.yml`: Configuración del libro.
+Antes de abrir la plantilla con tu agente de IA, necesitas tener instalado **como mínimo**:
 
-## 🌍 Soporte Multi-idioma
+### Imprescindible
+1. **Python 3.10 o superior** → [Descargar](https://www.python.org/downloads/)
+   - ⚠️ **En Windows**: marca la casilla **"Add Python to PATH"** durante la instalación
+   - Para verificar: abre una terminal y escribe `python --version` (o `py --version` en Windows)
 
-El proyecto está configurado para generar versiones en **Español (es)** e **Inglés (en)**.
-- **Contenido**:
-  - `book/es/`: Contenido en español.
-  - `book/en/`: Contenido en inglés.
-- **Configuración**:
-  - `_config_es.yml` / `_toc_es.yml`: Configuración para español.
-  - `_config_en.yml` / `_toc_en.yml`: Configuración para inglés.
-- **Traducción**: El script de construcción genera un selector de idioma automáticamente en la web.
+### Recomendado (no obligatorio, el agente te ayudará a instalarlo)
+2. **Git** → [Descargar](https://git-scm.com/) (necesario para publicar en GitHub)
+3. **uv** (gestor de paquetes ultrarrápido) → El agente te preguntará si quieres instalarlo
 
-## 📚 Documentación y Scripts
+### Para publicar en la web
+4. **Cuenta en GitHub** → [Crear cuenta](https://github.com/signup)
+5. **Un repositorio** creado a partir de esta plantilla (botón "Use this template" en GitHub)
 
-Lee los tutoriales incluidos en `book/es/01_tutorial/` para aprender más.
+---
 
-### 📄 Exportar a PDF
-El template incluye generación automática de PDF para cada idioma.
+## 🚀 Guía de inicio — Qué decirle al agente
 
-- **En la nube (GitHub Actions)**: Los PDFs **no se generan en cada push** (para ahorrar tiempo de CI). Para regenerarlos, tienes dos opciones:
-  1. **Incluir `[pdf]` en el mensaje del commit**:
-     ```bash
-     git commit -m "Actualizar contenido [pdf]"
-     ```
-     Esto activará los pasos de instalación de LaTeX y generación de PDF en el workflow.
-  2. **Lanzar el workflow manualmente** desde la pestaña _Actions_ del repositorio en GitHub, marcando la opción _Build PDF_.
+Abre tu herramienta (VS Code, Antigravity o Codex) en la carpeta del proyecto y dile lo siguiente:
 
-- **En local** (requiere LaTeX instalado):
-  ```bash
-  python scripts/export_pdf.py
-  ```
-  Esto generará `book/_static/teachbook_es.pdf` y `book/_static/teachbook_en.pdf`.
+### 1️⃣ Primera vez: configurar el entorno
 
-### 🎨 Personalización de PDF
-Puedes personalizar la apariencia del PDF (portadas, estilos) editando los archivos en `latex_templates/`:
-- `latex_templates/common/`: Archivos comunes (ej: macros matemáticas).
-- `latex_templates/es/`: Archivos específicos para español.
-- `latex_templates/en/`: Archivos específicos para inglés.
+Dile al agente:
 
-## 🤝 Contribuir
+> **"Prepara el entorno del proyecto. Es la primera vez que lo abro."**
+
+O también puedes decir:
+- *"Configura el proyecto"*
+- *"Instala todo lo necesario"*
+- *"No me funciona, falta algo"*
+
+El agente:
+- Detectará tu sistema operativo (Windows o Mac)
+- Instalará `uv` (gestor de paquetes rápido) si no lo tienes
+- Creará el entorno virtual `.venv`
+- Instalará todas las dependencias
+- Sincronizará las instrucciones para que funcione con tu herramienta
+
+⏱️ **Tarda 1-3 minutos** la primera vez.
+
+### 2️⃣ Compilar el libro (generar la web)
+
+> **"Compila el libro"** o **"Genera la web"**
+
+Esto crea la versión HTML navegadle en `book/_build/html/`. Puedes abrirla en cualquier navegador.
+
+### 3️⃣ Ver cambios en tiempo real (desarrollo)
+
+> **"Quiero ver el libro en vivo"** o **"Abre la vista previa"**
+
+Se abrirá tu navegador en `localhost:8000` y los cambios se reflejarán automáticamente al guardar los archivos.
+
+### 4️⃣ Generar los PDFs
+
+> **"Genera los PDFs del libro"** o **"Exportar a PDF"**
+
+El agente instalará LaTeX (Tectonic) si es necesario y generará `teachbook_es.pdf` y `teachbook_en.pdf`.
+
+### 5️⃣ Guardar cambios en GitHub
+
+> **"Guarda y publica los cambios"** o **"Haz commit y push"**
+
+El agente hará `git add` + `commit` + `push` automáticamente con un mensaje descriptivo.
+
+### 6️⃣ Publicar en GitHub Pages (solo la primera vez)
+
+**Esto lo haces tú manualmente, una sola vez:**
+
+1. Ve a tu repositorio en [github.com](https://github.com)
+2. Ve a **Settings** → **Pages**
+3. En **Source**, selecciona: **GitHub Actions**
+4. ¡Listo! A partir de ahora, cada vez que hagas push, el libro se publicará automáticamente
+
+> La URL de tu libro será: `https://<tu-usuario>.github.io/<nombre-del-repo>/`
+
+---
+
+## 📂 Estructura del proyecto (no hace falta tocarla)
+
+```
+teachbook_sciences_template/
+├── book/                    # ← Contenido del libro (aquí editas)
+│   ├── es/                  # Contenido en español
+│   │   ├── intro.md         # Página de inicio
+│   │   ├── 01_tutorial/     # Tutoriales
+│   │   └── 02_grados/       # Ejemplos por grado
+│   ├── en/                  # Contenido en inglés (misma estructura)
+│   ├── _config_es.yml       # Configuración español
+│   ├── _toc_es.yml          # Índice español
+│   └── _static/             # Imágenes, CSS, logos
+├── scripts/                 # Scripts de automatización (no editar)
+├── latex_templates/         # Plantillas PDF (personalizable)
+├── AGENTS.md                # Instrucciones para el agente de IA
+└── .github/skills/          # Skills del agente (no editar)
+```
+
+### Archivos que SÍ puedes editar:
+- `book/es/*.md` y `book/en/*.md` — contenido del libro
+- `book/_toc_es.yml` y `book/_toc_en.yml` — índice del libro
+- `book/_config_es.yml` y `book/_config_en.yml` — título, autor, etc.
+- `book/_static/` — imágenes y logos
+
+### Archivos que NO debes tocar:
+- `scripts/` — los ejecuta el agente automáticamente
+- `.github/skills/` — instrucciones para el agente
+- `AGENTS.md`, `CLAUDE.md` — configuración del agente
+
+---
+
+## 🌍 Soporte multi-idioma
+
+El libro genera versiones en **español** e **inglés** automáticamente con un selector de idioma en la web.
+
+**Regla importante**: Si añades contenido en un idioma, DEBE existir en todos los idiomas. Díselo al agente:
+
+> **"Añade un nuevo capítulo de Biología al libro"**
+
+El agente se encargará de crear el contenido en `book/es/` Y `book/en/`, y de actualizar ambos índices.
+
+---
+
+## 💬 Frases útiles para el agente
+
+| Quiero... | Dile al agente |
+|---|---|
+| Configurar todo | *"Prepara el entorno"* |
+| Compilar la web | *"Compila el libro"* |
+| Ver cambios en vivo | *"Abre la vista previa"* |
+| Generar PDFs | *"Genera los PDFs"* |
+| Guardar cambios | *"Guarda y publica los cambios"* |
+| Añadir un capítulo | *"Añade un capítulo de [tema]"* |
+| Añadir una imagen | *"Inserta una imagen en [sección]"* |
+| Añadir un video | *"Añade un video de YouTube en [sección]"* |
+| Convertir un PDF | *"Convierte este PDF a Markdown"* |
+| Que algo no funciona | *"No me funciona [cosa]"* |
+| Añadir una ecuación | *"Añade la ecuación [ecuación] en [sección]"* |
+
+---
+
+## 🧪 Tests automáticos
+
+El proyecto incluye tests automáticos que se ejecutan en **Windows** y **macOS (Apple Silicon)** en cada push, verificando que:
+- Todos los scripts compilan correctamente
+- El entorno se configura desde cero
+- El libro se compila en ambos idiomas
+- Las skills se sincronizan
+
+---
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo **CC BY 4.0** — eres libre de usar, modificar y redistribuir con atribución.
+
+---
+
+## 👥 Créditos
+
+- **Álvaro Lozano Murciego** — Universidad de Salamanca
+- **André Sales Mendes** — Universidad de Salamanca
+- Basado en [TeachBooks](https://teachbooks.io/) y [Jupyter Book](https://jupyterbook.org/)
