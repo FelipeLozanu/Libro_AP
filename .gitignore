@@ -1,149 +1,62 @@
-# Byte-compiled / optimized / DLL files
+# ============================================================
+# TeachBook Sciences Template — .gitignore
+# Solo lo que realmente necesita este proyecto
+# ============================================================
+
+# --- Python ---
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Python
-.Python
-.vscode/
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
+*.pyc
+.venv/
 env/
 venv/
-ENV/
-env.bak/
-venv.bak/
+.python-version
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# --- Jupyter ---
+.ipynb_checkpoints
 
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# Jupyter Book
-_build/
-.teachbooks/
+# --- Jupyter Book (build output) ---
+book/_build/
 book/conf.py
 book/_static/languages.json
-
-# Jupyter Book root config/toc (duplicates of _config_es.yml / _toc_es.yml)
 book/_config.yml
 book/_toc.yml
-
-# LaTeX build artifacts
-latex_templates/_sphinx_design_static/
-
-# Ruff cache
-.ruff_cache/
-
-# poetry files
-pyproject.toml
-
-# Binaries
-*.exe
-
-# Test artifacts
-sidebar_verification.png
-
-# Root-level temp builds
 _temp_build_*
 _temp_pdf_*
 
-# Skills sincronizados (la fuente de verdad está en .github/skills/)
+# --- LaTeX (build artifacts) ---
+latex_templates/_sphinx_design_static/
+
+# --- Generated PDFs (se regeneran con export_pdf.py) ---
+book/_static/teachbook*.pdf
+
+# --- Skills sincronizados (la fuente está en .github/skills/) ---
 .claude/skills/
 .agents/skills/
 .agent/skills/
 
-# Instrucciones sincronizadas
+# --- Instrucciones sincronizadas (generada desde AGENTS.md) ---
 .github/copilot-instructions.md
 
-# Generated PDFs (se regeneran con export_pdf.py)
-book/_static/teachbook*.pdf
+# --- Binarios ---
+*.exe
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editors ---
+.vscode/
+.idea/
+
+# --- Tools cache ---
+.ruff_cache/
+.mypy_cache/
+.cache/
+
+# --- Test artifacts ---
+sidebar_verification.png
+
+# --- Env ---
+.env
