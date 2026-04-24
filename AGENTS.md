@@ -186,6 +186,12 @@ Las skills están en `.github/skills/` (fuente de verdad) y se sincronizan a `.c
 | `teachbook-add-content` | Añadir nuevos capítulos o secciones |
 | `teachbook-multimedia` | Insertar imágenes, videos, ecuaciones |
 | `teachbook-pdf-to-markdown` | Convertir PDFs existentes a Markdown |
+| `teachbook-generate-mermaid-diagram` | Crear diagramas de flujo, ER, UML con Mermaid |
+| `teachbook-generate-schemdraw-circuit` | Crear diagramas de circuitos eléctricos |
+| `teachbook-generate-teaching-notebook` | Crear notebooks docentes con código ejecutable |
+| `teachbook-generate-interactive-html` | Añadir HTML interactivo sin frameworks JS |
+| `teachbook-generate-quiz` | Crear cuestionarios con respuestas ocultas |
+| `teachbook-review-teaching-quality` | Revisar calidad docente del contenido |
 
 ## Tono de Comunicación
 
