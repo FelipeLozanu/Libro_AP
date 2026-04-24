@@ -15,10 +15,15 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() not in ("utf-8", "utf8"):
 
 
 def get_jupyter_book():
-    """Returns the path to jupyter-book executable in the virtual environment."""
+    """Returns the path to jupyter-book executable. Prefers venv, falls back to system."""
     if os.name == "nt":
-        return os.path.join(".venv", "Scripts", "jupyter-book.exe")
-    return os.path.join(".venv", "bin", "jupyter-book")
+        venv_jb = os.path.join(".venv", "Scripts", "jupyter-book.exe")
+    else:
+        venv_jb = os.path.join(".venv", "bin", "jupyter-book")
+    if os.path.isfile(venv_jb):
+        return venv_jb
+    # Fallback: system-wide jupyter-book (e.g. CI environments)
+    return "jupyter-book"
 
 
 # Mapping of language codes to display names (ISO 639-1)
