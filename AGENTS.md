@@ -134,6 +134,40 @@ Usa SIEMPRE este patrón para que funcione en ambos formatos:
 - En PDF se ve el enlace como texto.
 - NUNCA uses `iframe` sin el bloque `{raw} latex` alternativo.
 
+### Vídeo local estático (HTML5)
+Para un vídeo generado por ti (por ejemplo, con Manim), guárdalo en `book/_static/videos/` e insértalo así:
+
+```md
+```{raw} html
+<video width="720" controls>
+  <source src="_static/videos/mi_animacion.mp4" type="video/mp4">
+  Tu navegador no soporta vídeo HTML5.
+</video>
+```
+
+```{raw} latex
+\begin{center}
+\textbf{Vídeo local:} consulte la versión HTML del libro para reproducirlo.
+\end{center}
+```
+```
+
+- En HTML se reproduce el `.mp4`.
+- En PDF se muestra una referencia textual.
+- Úsalo para animaciones educativas renderizadas localmente.
+
+### Animaciones con Manim Community (opción avanzada)
+Si quieres generar un vídeo matemático o físico por código, usa **Manim Community Edition** (no ManimGL).
+
+Flujo recomendado:
+
+1. Crear una escena en Python con `from manim import *`
+2. Renderizarla con `manim`
+3. Copiar el `.mp4` a `book/_static/videos/`
+4. Insertarlo con el patrón de vídeo local HTML5 anterior
+
+**NO usar ManimGL** en este proyecto. Solo **Manim Community**.
+
 ### Código Python ejecutable (Notebooks)
 - Los notebooks `.ipynb` se ejecutan si `_config.yml` tiene `execute_notebooks: auto`.
 - Por defecto están DESACTIVADOS (`off`) para velocidad. Actívalo solo si el usuario lo pide.
@@ -319,6 +353,7 @@ Las skills están en `.github/skills/` (fuente de verdad) y se sincronizan a `.c
 | `teachbook-generate-diagram` | Crear diagramas Kroki (Mermaid, PlantUML, GraphViz, etc.) compatibles con HTML y PDF |
 | `teachbook-generate-schemdraw-circuit` | Crear diagramas de circuitos eléctricos |
 | `teachbook-generate-circuitikz` | Crear circuitos precisos con CircuitikZ exportados a imagen |
+| `teachbook-generate-manim-video` | Crear animaciones educativas con Manim Community e integrarlas como vídeo local HTML5 |
 | `teachbook-generate-teaching-notebook` | Crear notebooks docentes con código ejecutable |
 | `teachbook-generate-interactive-html` | Añadir HTML interactivo sin frameworks JS |
 | `teachbook-generate-quiz` | Crear cuestionarios con respuestas ocultas |

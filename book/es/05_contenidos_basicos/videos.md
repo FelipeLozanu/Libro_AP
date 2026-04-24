@@ -58,6 +58,64 @@ Para vídeos alojados en `_static/`:
 ```
 ````
 
+Ruta recomendada para los vídeos locales del libro:
+
+- `book/_static/videos/mi_video.mp4`
+
+## Animación generada con Manim Community
+
+Si quieres crear una animación matemática o física por código, usa **Manim Community Edition** y guarda el resultado como `.mp4` en `book/_static/videos/`.
+
+Ejemplo de escena:
+
+```python
+from manim import *
+import numpy as np
+
+
+class SineWave(Scene):
+    def construct(self):
+        axes = Axes(
+            x_range=[0, 2 * np.pi, np.pi / 2],
+            y_range=[-1.5, 1.5, 0.5],
+            x_length=8,
+            y_length=4,
+        )
+        curve = axes.plot(lambda x: np.sin(x), color=BLUE)
+        label = MathTex("y = \\sin(x)").next_to(axes, UP)
+
+        self.play(Create(axes))
+        self.play(Create(curve), Write(label))
+        self.wait(1)
+```
+
+Renderizado:
+
+```bash
+manim -pql wave.py SineWave
+```
+
+Inserción en el libro:
+
+````md
+```{raw} html
+<video width="720" controls>
+  <source src="_static/videos/sine_wave.mp4" type="video/mp4">
+  Tu navegador no soporta vídeo HTML5.
+</video>
+```
+
+```{raw} latex
+\begin{center}
+\textbf{Vídeo: Onda senoidal animada.} Consulte la versión HTML del libro.
+\end{center}
+```
+````
+
+```{tip}
+En este proyecto usa SOLO **Manim Community** (`from manim import *`). No uses ManimGL.
+```
+
 ## Vídeo con descripción
 
 Es buena práctica añadir contexto antes del vídeo:
