@@ -111,6 +111,18 @@ dmypy.json
 # Jupyter Book
 _build/
 .teachbooks/
+book/conf.py
+book/_static/languages.json
+
+# Jupyter Book root config/toc (duplicates of _config_es.yml / _toc_es.yml)
+book/_config.yml
+book/_toc.yml
+
+# LaTeX build artifacts
+latex_templates/_sphinx_design_static/
+
+# Ruff cache
+.ruff_cache/
 
 # poetry files
 pyproject.toml
@@ -120,7 +132,18 @@ pyproject.toml
 
 # Test artifacts
 sidebar_verification.png
- 
+
 # Root-level temp builds
 _temp_build_*
 _temp_pdf_*
+
+# Skills sincronizados (la fuente de verdad está en .github/skills/)
+.claude/skills/
+.agents/skills/
+.agent/skills/
+
+# Instrucciones sincronizadas
+.github/copilot-instructions.md
+
+# Generated PDFs (se regeneran con export_pdf.py)
+book/_static/teachbook*.pdf

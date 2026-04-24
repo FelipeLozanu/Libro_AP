@@ -1,31 +1,70 @@
 ---
 name: teachbook-build
-description: Compila el libro TeachBook generando una versión web HTML local.
+description: >
+  Compila el libro TeachBook generando una versión web HTML multi-idioma.
+  Lee todos los archivos de contenido, los procesa y genera una web estática navegable.
+  Trigger phrases: "compila", "compilar", "build", "genera web", "genera HTML",
+  "construye el libro", "quiero ver cómo queda", "genera la versión web",
+  "rebuild", "construir", "crear web".
 ---
 
-# Skill: Compilar Libro 📚
+# Skill: Compilar el Libro (Build HTML)
 
-Esta skill convierte tus archivos de texto y código en una página web interactiva.
+## Cuándo usar esta skill
 
-## ¿Qué hace?
-- Lee todos los archivos de `book/`.
-- Ejecuta los notebooks de código.
-- Genera una web estática en la carpeta `book/_build/html/`.
+- Después de crear o editar contenido (archivos `.md` o `.ipynb`).
+- Para verificar que todo el contenido se renderiza correctamente.
+- Antes de publicar cambios en GitHub Pages.
+- Si se sospecha que algo está mal formateado.
 
-## ¿Cuándo usarla?
-- Cuando hayas terminado de escribir una sección.
-- Para verificar que todo se ve bien antes de publicar.
-- Si quieres ver cómo quedan las fórmulas o gráficos.
+## Qué hace `build_book.py`
 
-## Cómo pedirla al Agente
-> "Compila el libro."
-> "Quiero ver cómo queda la web."
-> "Genera la versión HTML."
+1. **Detecta los idiomas** automáticamente buscando archivos `_config_<lang>.yml` en `book/`.
+2. **Para cada idioma**, crea un proyecto temporal standalone, compila con `jupyter-book build`, y mueve el resultado.
+3. **Genera `languages.json`** para el selector de idiomas en la interfaz web.
+4. **Fusiona los assets estáticos** (CSS, JS, logos) de todos los idiomas en un `_static` global.
+5. **Crea un `index.html`** raíz que redirige al idioma principal (español por defecto).
+6. **Genera `.nojekyll`** para compatibilidad con GitHub Pages.
 
-El agente te avisará si hay algún error en tu contenido.
+## Ubicación de salida
 
-## Acción Técnica
-El agente ejecutará:
-```bash
-python scripts/build_book.py
 ```
+book/_build/html/           ← Raíz del sitio web
+├── index.html              ← Redirección al idioma principal
+├── es/                     ← Versión en español
+├── en/                     ← Versión en inglés
+├── _static/                ← Assets compartidos (CSS, JS, imágenes)
+└── .nojekyll               ← Para GitHub Pages
+```
+
+## Instrucciones para el agente
+
+### Ejecutar la compilación
+
+El agente DEBE usar el Python del entorno virtual (`.venv`), NO el Python del sistema:
+
+| Sistema | Comando |
+|---|---|
+| Linux / macOS | `.venv/bin/python scripts/build_book.py` |
+| Windows | `.venv\Scripts\python.exe scripts/build_book.py` |
+
+### Si el build falla
+
+1. **Verificar `_toc_<lang>.yml`**: Comprobar que la sintaxis YAML es correcta (indentación con 2 espacios, sin tabs).
+2. **Verificar rutas de archivos**: Cada entrada `file:` en el TOC debe apuntar a un archivo real en `book/<lang>/`.
+3. **Verificar `_config_<lang>.yml`**: Comprobar que no hay errores de sintaxis YAML.
+4. **Verificar contenido**: Los archivos `.md` deben tener sintaxis MyST válida.
+5. **Re-ejecutar**: Tras corregir, volver a ejecutar `build_book.py`.
+
+### Errores comunes
+
+| Error | Causa probable | Solución |
+|---|---|---|
+| `FileNotFoundError` en build | Un archivo referenciado en `_toc.yml` no existe | Crear el archivo faltante o corregir la ruta |
+| `EISDIR` error | El TOC apunta a un directorio en vez de un archivo | Usar `file: ruta/al/archivo` sin la extensión `.md` |
+| YAML parse error | Sintaxis YAML incorrecta en config o TOC | Revisar indentación (2 espacios) y comillas |
+| Build exit code 1 | Contenido MyST con directivas mal cerradas | Revisar que los bloques ```` ```{directive} ```` estén bien cerrados |
+
+## Después de la compilación
+
+El resultado está en `book/_build/html/`. Se puede abrir `book/_build/html/index.html` en un navegador para verificar visualmente, o usar la skill `teachbook-live-preview` para una vista previa interactiva.

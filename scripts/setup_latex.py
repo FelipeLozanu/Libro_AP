@@ -3,89 +3,261 @@ import sys
 import shutil
 import platform
 import os
+import json
+import stat
 import urllib.request
 import zipfile
 import tarfile
+import tempfile
+
+
+VENV_DIR = ".venv"
+
+
+def get_venv_python():
+    if os.name == "nt":
+        return os.path.join(VENV_DIR, "Scripts", "python.exe")
+    return os.path.join(VENV_DIR, "bin", "python")
+
+
+def get_effective_python():
+    venv_python = get_venv_python()
+    if os.path.isfile(venv_python):
+        return venv_python
+    return sys.executable
+
 
 def is_tectonic_installed():
-    """Checks if tectonic is installed."""
     return shutil.which("tectonic") is not None
 
-def install_tectonic_pip():
-    """Tries installing tectonic via pip."""
-    print("📦 Intentando instalar Tectonic con pip...")
+
+def verify_tectonic():
+    if not is_tectonic_installed():
+        return False
     try:
-        subprocess.run([sys.executable, "-m", "pip", "install", "tectonic"], check=True)
+        result = subprocess.run(
+            ["tectonic", "--version"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        if result.returncode == 0:
+            version = result.stdout.strip().split("\n")[0]
+            print(f"✅ Tectonic {version} funcionando correctamente.")
+            return True
+    except (subprocess.TimeoutExpired, OSError):
+        pass
+    print("❌ Tectonic se instaló pero no se pudo ejecutar.")
+    return False
+
+
+def install_tectonic_pip():
+    print("📦 Intentando instalar Tectonic con pip...")
+    python = get_effective_python()
+    is_venv = python != sys.executable
+    if is_venv:
+        print(f"   Usando entorno virtual: {python}")
+    else:
+        print("   Usando Python del sistema.")
+    try:
+        subprocess.run(
+            [python, "-m", "pip", "install", "tectonic"],
+            check=True,
+        )
         print("✅ Tectonic instalado correctamente con pip.")
         return True
     except subprocess.CalledProcessError:
         print("❌ Error instalando con pip.")
         return False
 
-def install_tectonic_binary():
-    """Downloads the binary directly."""
-    print("⬇️  Descargando binario de Tectonic desde GitHub...")
-    
+
+def get_arch_tag():
+    machine = platform.machine().lower()
+    if machine in ("x86_64", "amd64"):
+        return "amd64"
+    if machine in ("arm64", "aarch64"):
+        return "arm64"
+    return None
+
+
+def get_platform_target():
     system = platform.system().lower()
-    url = ""
-    filename = ""
-    
-    if system == "windows":
-        url = "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.15.0/tectonic-0.15.0-x86_64-pc-windows-msvc.zip"
-        filename = "tectonic.zip"
-    elif system == "darwin":
-        url = "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.15.0/tectonic-0.15.0-x86_64-apple-darwin.tar.gz"
-        filename = "tectonic.tar.gz"
-    elif system == "linux":
-        url = "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.15.0/tectonic-0.15.0-x86_64-unknown-linux-musl.tar.gz"
-        filename = "tectonic.tar.gz"
+    arch = get_arch_tag()
+    if arch is None:
+        return None, None, None
+    targets = {
+        ("windows", "amd64"): ("x86_64-pc-windows-msvc", ".zip"),
+        ("darwin", "amd64"): ("x86_64-apple-darwin", ".tar.gz"),
+        ("darwin", "arm64"): ("aarch64-apple-darwin", ".tar.gz"),
+        ("linux", "amd64"): ("x86_64-unknown-linux-musl", ".tar.gz"),
+        ("linux", "arm64"): ("aarch64-unknown-linux-musl", ".tar.gz"),
+    }
+    result = targets.get((system, arch))
+    if result is None:
+        return None, None, None
+    return system, result[0], result[1]
+
+
+def fetch_latest_release():
+    api_url = (
+        "https://api.github.com/repos/tectonic-typesetting/tectonic/releases/latest"
+    )
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "teachbook-setup"}
+    req = urllib.request.Request(api_url, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        return data.get("tag_name"), data.get("assets", [])
+    except Exception as e:
+        print(f"❌ Error consultando GitHub API: {e}")
+        return None, []
+
+
+def find_asset_url(assets, rust_target, ext):
+    for asset in assets:
+        name = asset.get("name", "")
+        if rust_target in name and name.endswith(ext):
+            return asset.get("browser_download_url"), name
+    return None, None
+
+
+def get_binary_install_dir():
+    if os.name == "nt":
+        base = os.environ.get("APPDATA", os.path.expanduser("~"))
+        dest = os.path.join(base, "teachbook")
     else:
-        print(f"❌ Sistema operativo no soportado automáticamente: {system}")
+        dest = os.path.expanduser("~/.local/bin")
+    os.makedirs(dest, exist_ok=True)
+    return dest
+
+
+def install_tectonic_binary():
+    print("⬇️  Descargando binario de Tectonic desde GitHub...")
+
+    system, rust_target, ext = get_platform_target()
+    if rust_target is None:
+        machine = platform.machine()
+        sysname = platform.system()
+        print(f"❌ Plataforma no soportada: {sysname} {machine}")
+        print("   Plataformas soportadas: Windows/macOS/Linux en x86_64 o ARM64.")
         return False
 
-    try:
-        urllib.request.urlretrieve(url, filename)
-        print("✅ Descarga completada.")
-        
-        print("📦 Extrayendo...")
-        if filename.endswith(".zip"):
-            with zipfile.ZipFile(filename, 'r') as zip_ref:
-                zip_ref.extractall(".")
-        elif filename.endswith(".tar.gz"):
-            with tarfile.open(filename, "r:gz") as tar_ref:
-                tar_ref.extractall(".")
-        
-        os.remove(filename)
-        executable_name = "tectonic.exe" if system == "windows" else "tectonic"
-        current_script_dir = os.path.dirname(os.path.abspath(__file__))
-        shutil.move(executable_name, os.path.join(current_script_dir, executable_name))
-        
-        print(f"✅ Tectonic colocado en: {os.path.join(current_script_dir, executable_name)}")
-        return True
-    except Exception as e:
-        print(f"❌ Error descargando/extrayendo: {e}")
+    tag_name, assets = fetch_latest_release()
+    if not tag_name or not assets:
+        print("❌ No se pudo obtener la última versión desde GitHub.")
         return False
+
+    version = tag_name.lstrip("tectonic@")
+    print(f"   Última versión disponible: {version}")
+
+    download_url, asset_name = find_asset_url(assets, rust_target, ext)
+    if not download_url:
+        print(f"❌ No se encontró binario para {rust_target} en la release {tag_name}.")
+        print("   Revisa https://github.com/tectonic-typesetting/tectonic/releases")
+        return False
+
+    print(f"   Descargando {asset_name}...")
+
+    install_dir = get_binary_install_dir()
+    with tempfile.TemporaryDirectory(prefix="tectonic_") as tmp:
+        archive_path = os.path.join(tmp, asset_name)
+
+        try:
+            urllib.request.urlretrieve(download_url, archive_path)
+        except Exception as e:
+            print(f"❌ Error descargando: {e}")
+            return False
+
+        print("📦 Extrayendo...")
+        extract_dir = os.path.join(tmp, "extracted")
+        os.makedirs(extract_dir, exist_ok=True)
+
+        if ext == ".zip":
+            with zipfile.ZipFile(archive_path, "r") as zf:
+                zf.extractall(extract_dir)
+        else:
+            with tarfile.open(archive_path, "r:gz") as tf:
+                tf.extractall(extract_dir)
+
+        executable_name = "tectonic.exe" if system == "windows" else "tectonic"
+        extracted_bin = os.path.join(extract_dir, executable_name)
+
+        if not os.path.isfile(extracted_bin):
+            for root, dirs, files in os.walk(extract_dir):
+                if executable_name in files:
+                    extracted_bin = os.path.join(root, executable_name)
+                    break
+
+        if not os.path.isfile(extracted_bin):
+            print("❌ No se encontró el ejecutable dentro del archivo descargado.")
+            return False
+
+        dest_path = os.path.join(install_dir, executable_name)
+        shutil.copy2(extracted_bin, dest_path)
+
+        if system != "windows":
+            st = os.stat(dest_path)
+            os.chmod(dest_path, st.st_mode | stat.S_IEXEC)
+
+    print(f"✅ Tectonic instalado en: {dest_path}")
+
+    if not shutil.which("tectonic"):
+        print()
+        print(
+            "⚠️  Tectonic no está en tu PATH. Para usarlo, añade esta línea a tu shell:"
+        )
+        if system == "windows":
+            print(f'   set PATH="%APPDATA%\\teachbook;%PATH%"')
+            print(
+                "   (O añade la carpeta en Configuración → Sistema → Variables de entorno)"
+            )
+        else:
+            print(f'   export PATH="{install_dir}:$PATH"')
+            shell_rc = os.path.expanduser("~/.bashrc")
+            preferred_shell = os.environ.get("SHELL", "")
+            if "zsh" in preferred_shell:
+                shell_rc = os.path.expanduser("~/.zshrc")
+            print(f"   O añade la línea anterior a {shell_rc}")
+        print()
+
+    return True
+
 
 def main():
     print("🔍 Verificando entorno LaTeX...")
+
     if is_tectonic_installed():
-        print("✅ Tectonic ya está instalado.")
-        return
+        if verify_tectonic():
+            return
+        print("⚠️  Tectonic encontrado pero no funciona. Se reinstalará.")
 
     auto_confirm = "--yes" in sys.argv or "-y" in sys.argv
-    print("ℹ️  No se encontró Tectonic.")
-    
+    print("ℹ️  No se encontró Tectonic (motor LaTeX ligero para generar PDFs).")
+
     if auto_confirm:
-        confirm = 's'
+        confirm = "s"
     else:
         confirm = input("¿Quieres instalarlo ahora? (s/n): ").strip().lower()
-        
-    if confirm == 's':
-        if not install_tectonic_pip():
-            print("⚠️  Pip falló. Intentando descarga directa...")
-            install_tectonic_binary()
+
+    if confirm != "s":
+        print("⚠️  Instalación cancelada. No se podrán generar PDFs.")
+        return
+
+    if install_tectonic_pip():
+        verify_tectonic()
+        return
+
+    print("⚠️  Pip falló. Intentando descarga directa del binario...")
+    if install_tectonic_binary():
+        verify_tectonic()
     else:
-        print("⚠️  Instalación cancelada.")
+        print()
+        print("❌ No se pudo instalar Tectonic automáticamente.")
+        print("   Puedes instalarlo manualmente:")
+        print("   • pip install tectonic")
+        print("   • https://tectonic-typesetting.github.io/book/latest/installation/")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
