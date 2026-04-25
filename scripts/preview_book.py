@@ -209,6 +209,8 @@ def run_real_build(reason: str) -> bool:
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
+            encoding="utf-8",
+            errors="replace",
         )
 
         assert process.stdout is not None
@@ -340,26 +342,48 @@ def main() -> int:
     if port != args.port:
         print(f"⚠️  Puerto {args.port} ocupado. Usando {port}.")
 
+    url = f"http://localhost:{port}"
+    existing_build = (HTML_DIR / "index.html").exists()
+
+    server = None
+    stop_event = threading.Event()
+    watcher_thread: threading.Thread | None = None
+
+    # Si ya existe un build válido, servirlo inmediatamente evita que localhost
+    # esté caído mientras termina la recompilación inicial.
+    if existing_build:
+        server = start_server(port)
+        print("\n" + "=" * 72)
+        print(f"🌐 Preview provisional lista: {url}")
+        print("   Sirviendo el último build correcto mientras se recompila.")
+        print("=" * 72 + "\n")
+
+        if not args.no_browser:
+            open_browser(url)
+
     # Initial build first. This prevents opening stale HTML from yesterday.
-    if not run_real_build("arranque inicial"):
+    initial_build_ok = run_real_build("arranque inicial")
+    if not initial_build_ok and not existing_build:
         return 1
 
-    server = start_server(port)
-    stop_event = threading.Event()
+    if server is None:
+        server = start_server(port)
 
-    watcher_thread: threading.Thread | None = None
     if not args.no_watch:
         watcher_thread = threading.Thread(target=watcher_loop, args=(stop_event,), daemon=True)
         watcher_thread.start()
 
-    url = f"http://localhost:{port}"
     print("\n" + "=" * 72)
     print(f"🌐 Preview listo: {url}")
     print("   Si ves algo viejo: Ctrl+F5. El servidor manda cabeceras no-cache.")
+    if existing_build and initial_build_ok:
+        print("   El contenido ya se ha refrescado con la recompilación inicial.")
+    elif existing_build and not initial_build_ok:
+        print("   Se mantiene visible el último build correcto; la recompilación inicial falló.")
     print("   Pulsa Ctrl+C para detener.")
     print("=" * 72 + "\n")
 
-    if not args.no_browser:
+    if not args.no_browser and not existing_build:
         open_browser(url)
 
     def shutdown(_signum: int | None = None, _frame: object | None = None) -> None:

@@ -3,7 +3,7 @@ author: Álvaro Lozano Murciego y André Sales Mendes
 copyright: "2025"
 logo: "_static/logo.png"
 language: es
-exclude_patterns: ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints", "_build_*", "en/", "temp_build_*", "latex_templates*", "_TRASH*"]
+exclude_patterns: ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints", "_build_*", "en/", "temp_build_*", "latex_templates*", "_TRASH*", "es/intro.md", "es/01_tutorial/**", "es/02_grados/**", "es/03_ejemplos_transferibles/**", "es/05_contenidos_basicos/**", "es/06_interactividad/**", "es/90_acerca_de.md", "es/91_licencias.md", "es/92_como_citar.md", "es/93_referencias.md"]
 execute:
   execute_notebooks: off
 parse:

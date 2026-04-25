@@ -354,6 +354,7 @@ def verify_installation(dev_mode=False):
     python_cmd = get_venv_python()
     try:
         result = subprocess.check_output([python_cmd, "-m", "pip", "freeze"], text=True)
+        installed_packages = {line.split("==", 1)[0].lower() for line in result.splitlines() if "==" in line}
 
         required_packages = [
             "jupyter-book",
@@ -370,7 +371,7 @@ def verify_installation(dev_mode=False):
         if dev_mode:
             required_packages.append("playwright")
 
-        missing = [pkg for pkg in required_packages if pkg not in result]
+        missing = [pkg for pkg in required_packages if pkg.lower() not in installed_packages]
 
         if missing:
             print(f"⚠️  Paquetes faltantes: {missing}")

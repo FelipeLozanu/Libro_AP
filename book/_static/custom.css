@@ -266,6 +266,20 @@ html.opendyslexic-mode code {
     line-height: 1.8 !important;
 }
 
+/* Keep MathJax/LaTeX rendering out of the dyslexic text overrides to avoid clipping. */
+html.opendyslexic-mode mjx-container,
+html.opendyslexic-mode mjx-container *,
+html.opendyslexic-mode .MathJax,
+html.opendyslexic-mode .MathJax *,
+html.opendyslexic-mode .math,
+html.opendyslexic-mode .math * {
+    font-family: inherit !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    line-height: normal !important;
+    overflow: visible !important;
+}
+
 /* Accessibility toggle button */
 .teachbook-a11y-btn {
     display: inline-flex !important;
