@@ -29,6 +29,32 @@ BOOK_DIR = "book"
 STATIC_DIR = os.path.join(BOOK_DIR, "_static")
 
 
+def build_fontconfig_env():
+    """Provides a minimal Fontconfig setup for Windows Tectonic/XeLaTeX."""
+    env = os.environ.copy()
+
+    if os.name != "nt":
+        return env
+
+    fontconfig_dir = os.path.join(SCRIPT_DIR, "fontconfig")
+    fonts_conf = os.path.join(fontconfig_dir, "fonts.conf")
+    if not os.path.exists(fonts_conf):
+        return env
+
+    env["FONTCONFIG_PATH"] = fontconfig_dir
+    env["FONTCONFIG_FILE"] = fonts_conf
+
+    font_dirs = [os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts")]
+    local_fonts = os.path.join(
+        os.environ.get("LOCALAPPDATA", ""), "Microsoft", "Windows", "Fonts"
+    )
+    if local_fonts.strip():
+        font_dirs.append(local_fonts)
+
+    env["OSFONTDIR"] = os.pathsep.join(font_dirs)
+    return env
+
+
 def get_languages():
     """Detects languages based on _config_<lang>.yml files."""
     configs = glob.glob(os.path.join(BOOK_DIR, "_config_*.yml"))
@@ -260,7 +286,7 @@ def build_pdf_for_lang(lang):
             ]
 
         print(f"🚀 Ejecutando: {' '.join(cmd)}")
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True, env=build_fontconfig_env())
 
         found_pdf = glob_pdf(".")
         if found_pdf:
@@ -284,32 +310,52 @@ def build_pdf_for_lang(lang):
 
 def sanitize_config(config_path):
     """
-    Removes exclusion patterns entirely to prevent EISDIR errors in temp environment.
+    Preserves project exclusions and appends only the temp-safe exclusions.
     """
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
+        safe_excludes = ["_build", "**.ipynb_checkpoints", ".git", ".github"]
         new_lines = []
         exclude_written = False
         for line in lines:
             if "exclude_patterns:" in line:
-                # Force a safe, minimal exclusion list
-                new_lines.append(
-                    'exclude_patterns: ["_build", "**.ipynb_checkpoints", ".git", ".github"]\n'
-                )
+                prefix, raw_value = line.split("exclude_patterns:", 1)
+                try:
+                    patterns = yaml.safe_load(raw_value.strip())
+                    if not isinstance(patterns, list):
+                        patterns = []
+                except yaml.YAMLError:
+                    patterns = []
+
+                for pattern in safe_excludes:
+                    if pattern not in patterns:
+                        patterns.append(pattern)
+
+                flow_list = yaml.safe_dump(
+                    patterns,
+                    default_flow_style=True,
+                    sort_keys=False,
+                    allow_unicode=True,
+                ).strip()
+                new_lines.append(f"{prefix}exclude_patterns: {flow_list}\n")
                 exclude_written = True
                 continue
             new_lines.append(line)
 
         if not exclude_written:
-            new_lines.append(
-                'exclude_patterns: ["_build", "**.ipynb_checkpoints", ".git", ".github"]\n'
-            )
+            flow_list = yaml.safe_dump(
+                safe_excludes,
+                default_flow_style=True,
+                sort_keys=False,
+                allow_unicode=True,
+            ).strip()
+            new_lines.append(f"exclude_patterns: {flow_list}\n")
 
         with open(config_path, "w", encoding="utf-8") as f:
             f.writelines(new_lines)
-        print(f"🔧 Configuración saneada (excludes minimos seguros) en: {config_path}")
+        print(f"🔧 Configuración saneada (excludes preservados) en: {config_path}")
     except Exception as e:
         print(f"⚠️ Error saneando configuración: {e}")
 

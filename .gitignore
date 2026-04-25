@@ -27,6 +27,7 @@ book/_config.yml
 book/_toc.yml
 _temp_build_*
 _temp_pdf_*
+_debug_pdf_*/
 
 # --- LaTeX (build artifacts) ---
 latex_templates/_sphinx_design_static/
@@ -58,6 +59,8 @@ desktop.ini
 .ruff_cache/
 .mypy_cache/
 .cache/
+.git-portable/
+.git-portable.zip
 
 # --- Test artifacts ---
 sidebar_verification.png
