@@ -160,13 +160,27 @@ El agente se encargará de crear el contenido en `book/es/` Y `book/en/`, y de a
 
 ---
 
-## 🧪 Tests automáticos
+## 🧪 Tests de verificación
 
-El proyecto incluye tests automáticos que se ejecutan en **Windows** y **macOS (Apple Silicon)** en cada push, verificando que:
+El proyecto incluye tests de verificación en **Windows** y **macOS (Apple Silicon)**, pero **NO se ejecutan automáticamente en cada push**. Esto está hecho así para que el profesorado o alumnado que copie la plantilla no gaste minutos de GitHub Actions innecesariamente.
+
+Los tests se lanzan **solo manualmente** desde la pestaña **Actions** en GitHub, cuando quieras comprobar que el proyecto arranca bien desde cero.
+
+Estos tests verifican que:
 - Todos los scripts compilan correctamente
 - El entorno se configura desde cero
 - El libro se compila en ambos idiomas
 - Las skills se sincronizan
+
+### Cuándo usarlos
+
+- antes de compartir la plantilla con otros
+- antes de una entrega importante
+- cuando cambies scripts, entorno o skills
+
+### Qué sí se ejecuta automáticamente
+
+El **deploy de GitHub Pages** sí se ejecuta automáticamente al hacer `push` a `main`.
 
 ---
 

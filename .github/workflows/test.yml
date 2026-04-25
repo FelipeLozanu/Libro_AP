@@ -4,11 +4,7 @@
 name: Test Clean Setup
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:  # Run tests only when explicitly requested
 
 jobs:
   # Quick syntax check first
