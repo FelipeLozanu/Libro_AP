@@ -439,6 +439,18 @@ def build_language(lang):
                 f"   ✅ Merge complete. Final _static count: {len(os.listdir(final_static_dir))}"
             )
 
+        # CRITICAL FIX: Sphinx stores document images in a root-level _images/
+        # directory, while localized pages live under /es/ and /en/ and link to
+        # ../../_images/.... A clean multi-language build must therefore merge
+        # each temp build's _images directory into the final root _images.
+        temp_images_dir = os.path.join(temp_build_root, "_build", "html", "_images")
+        final_images_dir = os.path.join(FINAL_HTML_DIR, "_images")
+        if os.path.exists(temp_images_dir):
+            print(f"🖼️  Merging document images from temp build ({lang}) to global _images...")
+            if not os.path.exists(final_images_dir):
+                os.makedirs(final_images_dir)
+            merge_dir_into(temp_images_dir, final_images_dir)
+
     except subprocess.CalledProcessError:
         print(f"❌ Error compilando idioma standalone: {lang}")
         sys.exit(1)

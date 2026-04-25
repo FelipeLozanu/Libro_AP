@@ -8,6 +8,19 @@ In simple terms:
 - the system **builds** it
 - you get a **clean, functional, publishable** book
 
+````{only} html
+```{raw} html
+<figure class="align-center">
+  <picture>
+    <source srcset="../../_static/images/1_Que_es_un_teachbook.webp" type="image/webp">
+    <img src="../../_static/images/1_Que_es_un_teachbook.png" alt="Visual overview of what a TeachBook is" style="width: 85%;">
+  </picture>
+  <figcaption>A TeachBook starts from editable content and produces a publishable teaching website.</figcaption>
+</figure>
+```
+````
+
+````{only} latex
 ```{figure} ../../_static/images/1_Que_es_un_teachbook.png
 ---
 name: fig-what-is-a-teachbook
@@ -17,6 +30,7 @@ align: center
 ---
 A TeachBook starts from editable content and produces a publishable teaching website.
 ```
+````
 
 ## Attribution and origin
 

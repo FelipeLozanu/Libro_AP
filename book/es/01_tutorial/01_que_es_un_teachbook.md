@@ -8,6 +8,19 @@ Dicho de forma simple:
 - el sistema lo **compila**
 - obtienes un libro **bonito, funcional y publicable**
 
+````{only} html
+```{raw} html
+<figure class="align-center">
+  <picture>
+    <source srcset="../../_static/images/1_Que_es_un_teachbook.webp" type="image/webp">
+    <img src="../../_static/images/1_Que_es_un_teachbook.png" alt="Esquema visual de qué es un TeachBook" style="width: 85%;">
+  </picture>
+  <figcaption>Un TeachBook parte de contenido editable y genera una web docente publicable.</figcaption>
+</figure>
+```
+````
+
+````{only} latex
 ```{figure} ../../_static/images/1_Que_es_un_teachbook.png
 ---
 name: fig-que-es-un-teachbook
@@ -17,6 +30,7 @@ align: center
 ---
 Un TeachBook parte de contenido editable y genera una web docente publicable.
 ```
+````
 
 ## Atribución y origen
 
