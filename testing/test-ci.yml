@@ -1,4 +1,4 @@
-# Test TeachBook from VIRGIN environments
+# Test TeachBook from first-run environments
 # Only Windows + macOS — the 2 OSes actual professors use.
 # Ubuntu/Linux users presumably know what they're doing.
 name: Test Clean Setup

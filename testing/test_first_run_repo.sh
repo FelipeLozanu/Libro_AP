@@ -1,7 +1,7 @@
 #!/bin/bash
-# Test TeachBook setup from a COMPLETELY VIRGIN environment
+# Test TeachBook setup from a clean first-run repository environment
 # This script simulates what a non-technical user would experience
-# when opening the project for the first time with NO tools installed.
+# when opening the project for the first time with no preconfigured project tooling.
 #
 # Usage: docker run --rm -v $(pwd)/..:/workspace test-ubuntu|test-fedora|test-alpine
 
@@ -10,7 +10,7 @@ set -euo pipefail
 PROJECT_DIR="/workspace"
 
 echo "═══════════════════════════════════════════════════"
-echo "  🧪 TeachBook Test — Entorno Virgen"
+echo "  🧪 TeachBook Test — Primer arranque del repositorio"
 echo "═══════════════════════════════════════════════════"
 echo ""
 echo "OS: $(cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d= -f2 || echo 'unknown')"
