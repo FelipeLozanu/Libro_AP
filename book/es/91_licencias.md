@@ -1,12 +1,23 @@
 # Licencias
 
-## Contenidos
-Todo el contenido de texto e imágenes (salvo que se indique lo contrario) se distribuye bajo licencia **Creative Commons Atribución 4.0 Internacional (CC BY 4.0)**.
+## Licencia del libro
 
-## Código
-Los ejemplos de código fuente se distribuyen bajo licencia **MIT**.
+Este libro se distribuye bajo licencia [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
-## Atribuciones
-Este proyecto utiliza:
+Esto permite compartir y adaptar el material, siempre que se reconozca la autoría.
+
+## Recursos externos
+
+Salvo indicación explícita en una página concreta, el contenido de este libro es de los autores del proyecto.
+
+Si en alguna página se reutilizan recursos externos, deberán mencionarse allí mismo con su atribución y licencia correspondiente.
+
+## Código y herramientas
+
+El proyecto hace uso de herramientas y bibliotecas externas, entre ellas:
+
+- [TeachBooks](https://teachbooks.io/)
 - [Jupyter Book](https://jupyterbook.org/)
-- [The Turing Way](https://the-turing-way.netlify.app/) (como inspiración)
+- [MyST Markdown](https://mystmd.org/)
+
+Cada herramienta conserva su propia licencia.
